@@ -1,0 +1,33 @@
+name: smartcam
+description: "A smart camera app with AI capabilities."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0' # Updated for modern package compatibility
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  camera: ^0.11.0+1
+  gal: ^2.1.2
+  google_generative_ai: ^0.4.1
+  google_mlkit_text_recognition: ^0.13.0
+  http: ^1.2.1
+  mobile_scanner: ^5.1.1
+  url_launcher: ^6.2.6
+  flutter_tts: ^4.0.2
+  google_mlkit_language_id: ^0.10.0
+  google_mlkit_commons: ^0.7.0
+  google_fonts: ^6.2.1
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
