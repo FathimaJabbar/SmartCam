@@ -274,11 +274,11 @@ class _CameraScreenState extends State<CameraScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildModeButton(CameraMode.textScan, "Translate"),
-                  _buildModeButton(CameraMode.sceneExplorer, "Scene"),
+                  _buildModeButton(CameraMode.qrScan, "Scan"),
+                  _buildModeButton(CameraMode.sceneExplorer, "Describe"),
                   _buildModeButton(CameraMode.photo, "Photo"),
-                  _buildModeButton(CameraMode.productSearch, "Product"),
-                  _buildModeButton(CameraMode.qrScan, "QR Scan"),
+                  _buildModeButton(CameraMode.textScan, "Translate"),
+                  _buildModeButton(CameraMode.productSearch, "Shopping"),
                 ],
               ),
             ),
