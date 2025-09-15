@@ -43,12 +43,12 @@ Before you begin, ensure you have the following installed on your system:
 1.  **Clone the Repository**
     Open your terminal and clone the project to your local machine:
     ```bash
-    git clone <your-repository-url-here>
+    git clone https://github.com/FathimaJabbar/SmartCam.git
     ```
 
 2.  **Navigate to the Project Directory**
     ```bash
-    cd <project-folder-name>
+    cd SmartCam
     ```
 
 3.  **Add API Keys (Very Important!)**

@@ -30,12 +30,9 @@ class ProductSearchService {
         final List results = data['shopping_results'] ?? [];
        
         return results.map((item) {
-          // --- THIS IS THE FINAL FIX ---
-          // We look for 'product_id' instead of 'link'.
           final String? productId = item['product_id'];
           String? fullLink;
          
-          // If a product_id exists, we build the URL ourselves.
           if (productId != null && productId.isNotEmpty) {
             fullLink = 'https://www.google.com/shopping/product/$productId';
           }
@@ -43,7 +40,7 @@ class ProductSearchService {
           return ProductResult(
             title: item['title'] ?? 'No Title',
             price: item['price'],
-            link: fullLink, // Use the newly constructed link (will be null if no id)
+            link: fullLink, 
             thumbnail: item['thumbnail'],
           );
         }).toList();

@@ -404,7 +404,6 @@ class _CameraScreenState extends State<CameraScreen> {
     );
   }
 
-  // --- ✨ NEW: Helper to get the correct icon for the shutter button ---
   IconData _getShutterIcon() {
     switch (_currentMode) {
       case CameraMode.photo:

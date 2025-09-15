@@ -25,13 +25,12 @@ class GalleryScreen extends StatelessWidget {
           : GridView.builder(
               padding: const EdgeInsets.all(4.0),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3, // 3 photos per row
+                crossAxisCount: 3, 
                 crossAxisSpacing: 4.0,
                 mainAxisSpacing: 4.0,
               ),
               itemCount: imagePaths.length,
               itemBuilder: (context, index) {
-                // Display images in reverse order (newest first)
                 final imagePath = imagePaths[imagePaths.length - 1 - index];
                 return Image.file(
                   File(imagePath),

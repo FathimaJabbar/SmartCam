@@ -52,7 +52,6 @@ class _ProductResultScreenState extends State<ProductResultScreen> {
             itemCount: products.length,
             itemBuilder: (context, index) {
               final product = products[index];
-              // The check is now for null instead of empty
               final bool hasLink = product.link != null;
 
               return Card(
@@ -66,7 +65,7 @@ class _ProductResultScreenState extends State<ProductResultScreen> {
                   subtitle: Text(product.price ?? 'Price not available'),
                  
                   onTap: hasLink ? () {
-                    _launchURL(product.link!); // Use the non-null link
+                    _launchURL(product.link!); 
                   } : null,
                  
                   trailing: hasLink ? const Icon(Icons.open_in_new) : null,
