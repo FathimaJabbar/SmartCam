@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'api_keys.dart';
 
 class ProductResult {
   final String title;
@@ -16,7 +17,7 @@ class ProductResult {
 }
 
 class ProductSearchService {
-  final String _apiKey = '873f2e911f15214aa5083a2d271f71a92f35e717fd68d1e929a3999927d1fb8b';
+ final String _apiKey = ApiKeys.serpApi;
 
   Future<List<ProductResult>> searchProducts(String query) async {
     final uri = Uri.parse(

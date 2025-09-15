@@ -44,21 +44,19 @@ Before you begin, ensure you have the following installed on your system:
 1.  *Clone the Repository*
     Open your terminal and clone the project to your local machine:
 
-    bash
+   ''' bash
     git clone <your_repository_url_here>
-    
+    '''
 
 2.  *Navigate to the Project Directory*
 
-    bash
+    '''bash
     cd smartcam-project-folder
-    
+    '''
 
 3.  *Add API Keys (Very Important\!)*
-    This project requires several API keys to function. Create a new file at lib/api_keys.dart.
-
-    Paste the following code into the new file and add your secret keys.
-
+    This project requires several API keys to function. Access the respective apis and paste in the api_keys.dart file in lib folder
+    '''
     dart
     // lib/api_keys.dart
 
@@ -67,29 +65,30 @@ Before you begin, ensure you have the following installed on your system:
       static const serpApi = 'YOUR_SERPAPI_KEY';
       static const imaggaApi = 'YOUR_IMAGGA_API_KEY';
       static const imaggaApiSecret = 'YOUR_IMAGGA_API_SECRET';
-    }
+    }'''
     
 
     > *Note:* To keep your keys secure, this api_keys.dart file should be added to your .gitignore file and never be committed to your repository.
 
 4.  *Install Dependencies*
     Run the following command to download all the necessary packages:
-
-    bash
+    ''' bash
     flutter pub get
+    '''
     
 
 5.  *Run the App*
     Make sure a device is connected or an emulator is running, then launch the app:
 
-    bash
+   ''' bash
     flutter run
+    '''
     
 
 ## 🕹 How to Use
 
   * The app opens directly to the camera interface.
-  * Select a mode from the bottom scrollable menu: *Photo, **Translate, **Describe, **Shopping, or **Scan*.
-  * In *Photo, **Translate, **Describe, or **Shopping* mode, tap the circular shutter button to capture an image and trigger the analysis.
+  * Select a mode from the bottom scrollable menu: *Photo, *Translate, *Describe, *Shopping, or *Scan*.
+  * In *Photo, *Translate, *Describe, or *Shopping* mode, tap the circular shutter button to capture an image and trigger the analysis.
   * In *Scan* mode, the camera will automatically detect codes.
   * Results are displayed in an interactive card that slides up from the bottom.

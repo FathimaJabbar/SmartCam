@@ -5,11 +5,12 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:http/http.dart' as http;
 import 'language_model.dart';
 import 'ai_result.dart';
+import 'api_keys.dart';
 
 class AIService {
-  final String _geminiApiKey = "AIzaSyB1SNteJp0wLrLsGVTv8cDSdG7HhNYI5yo";
-  final String _imaggaApiKey = "acc_82ea1ce2bfa08ec";
-  final String _imaggaApiSecret = "454e271c3de5dc2292360e5462942a14";
+  final String _geminiApiKey = ApiKeys.gemini;
+  final String _imaggaApiKey = ApiKeys.imaggaApi;
+  final String _imaggaApiSecret = ApiKeys.imaggaApiSecret;
 
   final String _geminiModelName = 'gemini-1.5-flash-latest';
 
