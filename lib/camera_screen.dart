@@ -1,3 +1,5 @@
+// ignore_for_file: unreachable_switch_default
+
 import 'dart:async';
 import 'dart:io';
 import 'package:camera/camera.dart';
@@ -15,6 +17,7 @@ import 'ai_service.dart';
 import 'analysis_card.dart';
 import 'ai_result.dart';
 import 'language_model.dart';
+import 'gallery_screen.dart'; // <-- Import the new gallery screen
 
 enum CameraMode { photo, textScan, sceneExplorer, qrScan, productSearch }
 
@@ -51,6 +54,9 @@ class _CameraScreenState extends State<CameraScreen> {
   bool _isProcessing = false;
   XFile? _lastCapturedImage;
 
+  // --- NEW: To store paths of captured images ---
+  final List<String> _capturedImagePaths = [];
+
   @override
   void initState() {
     super.initState();
@@ -83,7 +89,7 @@ class _CameraScreenState extends State<CameraScreen> {
       _flashMode = FlashMode.off;
     } on CameraException catch (e) {
       print('Error initializing camera: $e');
-        }
+    }
     if (!mounted) return;
     setState(() {
       _isCameraInitialized = true;
@@ -144,7 +150,7 @@ class _CameraScreenState extends State<CameraScreen> {
             else
               Center(child: CameraPreview(_controller!)),
             _buildTopControls(),
-            _buildBottomControls(),
+            _buildBottomControls(), // <-- This is now redesigned
             if (_showShutterEffect)
               Container(color: Colors.black.withOpacity(0.6)),
             if (_analysisData != null)
@@ -234,7 +240,7 @@ class _CameraScreenState extends State<CameraScreen> {
             ),
           ),
         ),
-        _buildBottomControls(),
+        _buildBottomControls(), // <-- Use the same redesigned controls here
       ],
     );
   }
@@ -245,20 +251,29 @@ class _CameraScreenState extends State<CameraScreen> {
       left: 0,
       right: 0,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.center, // Centered for a cleaner look
         children: [
-          IconButton(
-            onPressed: _toggleFlash,
-            icon: Icon(
-                _flashMode == FlashMode.off ? Icons.flash_off : _flashMode == FlashMode.auto ? Icons.flash_auto : Icons.flash_on,
-                color: Colors.white,
-                size: 32),
+          Container( // Added a background for better visibility
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(24)
+            ),
+            child: IconButton(
+              onPressed: _toggleFlash,
+              icon: Icon(
+                  _flashMode == FlashMode.off ? Icons.flash_off : _flashMode == FlashMode.auto ? Icons.flash_auto : Icons.flash_on,
+                  color: Colors.white,
+                  size: 28),
+            ),
           ),
         ],
       ),
     );
   }
 
+
+  // --- ✅ REDESIGNED: Bottom Controls UI ---
   Widget _buildBottomControls() {
     return Positioned(
       bottom: 0,
@@ -269,108 +284,171 @@ class _CameraScreenState extends State<CameraScreen> {
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: Column(
           children: [
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildModeButton(CameraMode.qrScan, "Scan"),
-                  _buildModeButton(CameraMode.sceneExplorer, "Describe"),
-                  _buildModeButton(CameraMode.photo, "Photo"),
-                  _buildModeButton(CameraMode.textScan, "Translate"),
-                  _buildModeButton(CameraMode.productSearch, "Shopping"),
-                ],
-              ),
-            ),
+            _buildModeSwitcher(), // Mode selector (e.g., Photo, Scene)
             const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(width: 64, height: 64),
-                GestureDetector(
-                  onTap: _isProcessing ? null : () {
-                    if (_currentMode == CameraMode.qrScan) {
-                      setState(() { _isActivelyScanningQr = true; });
-                    } else {
-                      _onCapturePressed();
-                    }
-                  },
-                  child: Container(
-                    height: 80,
-                    width: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _isProcessing ? Colors.grey : Colors.white,
-                      border: Border.all(color: Colors.grey, width: 4),
-                    ),
-                  ),
-                ),
-                IconButton(
-                  onPressed: _flipCamera,
-                  icon: const Icon(Icons.flip_camera_ios_outlined,
-                      color: Colors.white, size: 32),
-                ),
-              ],
-            ),
+            _buildShutterControls(), // Action buttons (Gallery, Shutter, Flip)
           ],
         ),
       ),
     );
   }
 
-  Widget _buildModeButton(CameraMode mode, String text) {
-    bool isSelected = _currentMode == mode;
-    return GestureDetector(
-      onTap: () async {
-        if (_currentMode == mode) return;
-        if (mode == CameraMode.qrScan) {
-          await _controller?.dispose();
-          _controller = null;
-        } else if (_currentMode == CameraMode.qrScan && _controller == null) {
-          await _initializeCamera(_selectedCamera);
-        }
-        setState(() {
-          _currentMode = mode;
-          _analysisData = null;
-          _lastCapturedImage = null;
-        });
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Text(
-          text,
-          style: TextStyle(
-            color: isSelected ? Colors.deepPurpleAccent : Colors.white,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            fontSize: 16,
-          ),
-        ),
+  // --- ✨ NEW: Horizontal Mode Switcher Widget ---
+  Widget _buildModeSwitcher() {
+    final Map<CameraMode, String> modeLabels = {
+      CameraMode.qrScan: "Scan",
+      CameraMode.sceneExplorer: "Describe",
+      CameraMode.photo: "Photo",
+      CameraMode.textScan: "Translate",
+      CameraMode.productSearch: "Shopping",
+    };
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: modeLabels.entries.map((entry) {
+          final mode = entry.key;
+          final text = entry.value;
+          bool isSelected = _currentMode == mode;
+          return GestureDetector(
+            onTap: () async {
+              if (_currentMode == mode) return;
+              if (mode == CameraMode.qrScan) {
+                await _controller?.dispose();
+                _controller = null;
+              } else if (_currentMode == CameraMode.qrScan && _controller == null) {
+                await _initializeCamera(_selectedCamera);
+              }
+              setState(() {
+                _currentMode = mode;
+                _analysisData = null;
+                _lastCapturedImage = null;
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                text,
+                style: TextStyle(
+                  color: isSelected ? Colors.deepPurpleAccent : Colors.white,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
 
-  void _toggleFlash() async {
-  if (_currentMode == CameraMode.qrScan) {
-    await _qrController.toggleTorch();
-    final bool isTorchOn = _qrController.torchEnabled; 
-    setState(() {
-      _flashMode = isTorchOn ? FlashMode.torch : FlashMode.off;
-    });
-  } else if (_controller != null) {
-    FlashMode newMode;
-    if (_flashMode == FlashMode.off) newMode = FlashMode.auto;
-    else if (_flashMode == FlashMode.auto) newMode = FlashMode.torch;
-    else newMode = FlashMode.off;
-    
-    try {
-      await _controller!.setFlashMode(newMode);
-      setState(() { _flashMode = newMode; });
-    } on CameraException catch (e) {
-      print("Error setting flash mode: $e");
+  // --- ✨ NEW: Shutter Controls Row (Gallery, Shutter, Flip) ---
+  Widget _buildShutterControls() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Gallery Button
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => GalleryScreen(imagePaths: _capturedImagePaths),
+                ),
+              );
+            },
+            icon: const Icon(Icons.photo_library_outlined, color: Colors.white, size: 32),
+          ),
+          // Shutter Button
+          GestureDetector(
+            onTap: _isProcessing ? null : () {
+              if (_currentMode == CameraMode.qrScan) {
+                setState(() { _isActivelyScanningQr = true; });
+              } else {
+                _onCapturePressed();
+              }
+            },
+            child: Container(
+              height: 80,
+              width: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.transparent,
+                border: Border.all(color: _isProcessing ? Colors.grey : Colors.white, width: 4),
+              ),
+              child: Container( // Inner circle for visual feedback
+                margin: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _isProcessing ? Colors.grey.withOpacity(0.5) : Colors.white.withOpacity(0.5),
+                ),
+                child: Icon(
+                  _getShutterIcon(), // <-- Dynamic Icon
+                  color: Colors.black87,
+                  size: 36,
+                ),
+              ),
+            ),
+          ),
+          // Flip Camera Button
+          IconButton(
+            onPressed: _isProcessing ? null : _flipCamera,
+            icon: const Icon(Icons.flip_camera_ios_outlined, color: Colors.white, size: 32),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // --- ✨ NEW: Helper to get the correct icon for the shutter button ---
+  IconData _getShutterIcon() {
+    switch (_currentMode) {
+      case CameraMode.photo:
+        return Icons.camera_alt;
+      case CameraMode.textScan:
+        return Icons.translate;
+      case CameraMode.sceneExplorer:
+        return Icons.explore;
+      case CameraMode.productSearch:
+        return Icons.shopping_cart;
+      case CameraMode.qrScan:
+        return Icons.qr_code_scanner;
+      default:
+        return Icons.camera_alt;
     }
   }
-}
+  
+  void _toggleFlash() async {
+    if (_currentMode == CameraMode.qrScan) {
+      await _qrController.toggleTorch();
+      // The mobile_scanner doesn't expose a stream for torch state,
+      // so we manually track it. A bit of a workaround.
+      final bool isTorchOn = _flashMode != FlashMode.torch;
+      setState(() {
+        _flashMode = isTorchOn ? FlashMode.torch : FlashMode.off;
+      });
+    } else if (_controller != null) {
+      FlashMode newMode;
+      // Cycle: Off -> Auto -> On (Torch) -> Off
+      if (_flashMode == FlashMode.off) newMode = FlashMode.auto;
+      else if (_flashMode == FlashMode.auto) newMode = FlashMode.torch;
+      else newMode = FlashMode.off;
+
+      try {
+        await _controller!.setFlashMode(newMode);
+        setState(() { _flashMode = newMode; });
+      } on CameraException catch (e) {
+        print("Error setting flash mode: $e");
+        // Revert on error
+        setState(() { _flashMode = _controller!.value.flashMode; });
+      }
+    }
+  }
+
   Future<void> _onCapturePressed() async {
     if ((_currentMode != CameraMode.photo && _controller == null) || (_controller != null && !_controller!.value.isInitialized) || _isProcessing) return;
     try {
@@ -393,6 +471,14 @@ class _CameraScreenState extends State<CameraScreen> {
         await Future.delayed(const Duration(milliseconds: 100));
         setState(() { _showShutterEffect = false; });
         await Gal.putImage(image.path);
+        
+        // --- NEW: Add image path to our list for the gallery view ---
+        if (mounted) {
+          setState(() {
+            _capturedImagePaths.add(image.path);
+          });
+        }
+        
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Image saved to gallery!')));
@@ -406,12 +492,12 @@ class _CameraScreenState extends State<CameraScreen> {
           setState(() { _lastCapturedImage = null; });
           return;
         }
-        
+
         final detectedLanguageCode = await _languageIdentifier.identifyLanguage(originalText);
         final detectedLanguage = supportedLanguages.firstWhere((lang) => lang.code == detectedLanguageCode, orElse: () => supportedLanguages.first).name;
 
         AIResult translationResult = await _aiService.translateText(originalText, from: detectedLanguage, to: 'English');
-        
+
         if (translationResult.isQuotaError) {
           if (!mounted) return;
           final wantsToSwitch = await _showQuotaDialog();

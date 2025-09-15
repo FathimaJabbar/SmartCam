@@ -2,10 +2,6 @@
 
 A multi-functional, AI-powered camera application built with Flutter. SmartCam acts as a "Shazam for the real world," allowing users to identify objects, translate text, scan QR codes, and more, all from a single, intuitive interface.
 
-## Demo
-
-*(It's highly recommended to record a short GIF or video of your app and add it here!)*
-
 ## Features
 
 * **Multi-Mode Camera:** A single interface provides access to five powerful tools:
