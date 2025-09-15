@@ -50,8 +50,7 @@ Before you begin, ensure you have the following installed on your system:
 2.  *Navigate to the Project Directory*
 
     ```bash
-    cd smartcam-project-folder
-    ```
+    cd smartcam-project-folder```
 
 3.  *Add API Keys (Very Important\!)*
     This project requires several API keys to function. Access the respective apis and paste it in the api_keys.dart file in the lib folder
